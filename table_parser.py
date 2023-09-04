@@ -77,33 +77,30 @@ def plot_custom_scatter(df, chosen_window, y):
   fig.update_layout(height = 450, width=950)
   fig.update_layout(showlegend=True)
   fig.update_yaxes(tickformat='.4f')
+  svg = fig.to_image(format="svg")
+  svg_str = svg.decode('utf-8') 
+  with open(f"{y}_{chosen_window}.svg", "w") as f:
+    f.write(svg_str)
   #fig.show()
-  fig.write_image("{}/{}_{}.png".format('/home/kelmanson/Desktop/test_of_script/', y, chosen_window)) # Change the output path
-  #svg = fig.to_image(format="svg")
-  #svg_str = svg.decode('utf-8') 
-
-  #with open(f"{y}_{chosen_window}.svg", "w") as f:
-  #  f.write(svg_str)
+  #fig.write_image("{}/{}_{}.png".format('%OUTPUT_PATH%', y, chosen_window)) 
 
 if __name__ == '__main__':
-    df_1 = open_csv_gui() 
-    df_2 = open_csv_gui()
-    df_3 = open_csv_gui()
-    df_4 = open_csv_gui()
-    df_5 = open_csv_gui()
-    df_6 = open_csv_gui()
-    df_7 = open_csv_gui()
-    df_1 = process_dataframe(df_1)
-    df_2 = process_dataframe(df_2)
-    df_3 = process_dataframe(df_3)
-    df_4 = process_dataframe(df_4)
-    df_5 = process_dataframe(df_5)
-    df_6 = process_dataframe(df_6)
-    df_7 = process_dataframe(df_7)
-    df_concat = pd.concat([df_1,df_2,df_3,df_4,df_5,df_6,df_7])
-    number = input('Choose the window: ')      # add more lines if more metrics are needed
-    plot_custom_scatter(df_concat, f'{number}', 'CC*')
-    plot_custom_scatter(df_concat, f'{number}', 'Rsplit (%)')
-    plot_custom_scatter(df_concat, f'{number}', 'Rfree')
-    plot_custom_scatter(df_concat, f'{number}', 'Rwork')
-    plot_custom_scatter(df_concat, f'{number}', 'SNR')
+
+    # Load dataframes
+    num_windows = input('Number of csv files:')
+    df_list = []
+    for i in range(int(num_windows)):  
+        df = open_csv_gui()
+        df = process_dataframe(df) 
+        df_list.append(df)
+    # Concatenate 
+    df = pd.concat(df_list)
+    # Get user input
+    window = input('Choose window: ')  
+    # Generate plots
+    plot_custom_scatter(df, window, 'CC*')
+    plot_custom_scatter(df, window, 'Rsplit (%)')
+    plot_custom_scatter(df, window, 'Rfree') 
+    plot_custom_scatter(df, window, 'Rwork')
+    plot_custom_scatter(df, window, 'SNR')
+
